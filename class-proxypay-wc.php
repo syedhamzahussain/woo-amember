@@ -99,7 +99,7 @@ class WC_Gateway_Proxypay extends WC_Payment_Gateway {
 				'public_id' => $order_number,
 				'merchant_id' => $proxypay_options['merchant_id'],
 				'ipn_url' => $IPN_Response,
-				'thanks_url' => add_query_arg('proxypay_payment_complete',1,$this->get_return_url($customer_order)),
+				'thanks_url' => $this->get_return_url($customer_order),
 				'cancel_url' => $customer_order->get_cancel_order_url(),
 				'name_f' => $customer_order->get_billing_first_name(),
 				'name_l' => $customer_order->get_billing_last_name(),
@@ -113,12 +113,12 @@ class WC_Gateway_Proxypay extends WC_Payment_Gateway {
 				'description' => $order_id,
 				'hash' => hash('sha256', $proxypay_options['merchant_secret']),
 			];
-      
+            
             $url = add_query_arg($post, 'https://mania-hosts.co.uk/portal/proxypay/signup' );
-		return array(
-				'result'   => 'success',
-				'redirect' => $url,
-		);
+            return array(
+                    'result'   => 'success',
+                    'redirect' => $url,
+            );
 	}
     
     function log( $message ){

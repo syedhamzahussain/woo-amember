@@ -4,7 +4,7 @@
  * Description: Provide you Amember Proxy Payment Gateway Integration.
  * Author: Syed Hamza Hussain
  * Author URI: https://www.upwork.com/fl/syedhamzahussain
- * Version: 1.1.1.1
+ * Version: 1.1.1.2
  *
  */
 
@@ -30,19 +30,16 @@ function tpg_init_gateway_class() {
     require_once 'class-proxypay-wc.php';
 }
 
- add_action('wp', 'proxypay_mark_payment_complete', 20);
-function proxypay_mark_payment_complete() {
-        global $wp;
-        if (isset( $wp->query_vars['order-received'] ) && isset($_GET['proxypay_payment_complete']) ) {
-            $order_id = absint($wp->query_vars['order-received']);
-            $order = wc_get_order($order_id);
+add_action('woocommerce_thankyou', 'proxypay_mark_payment_complete', 10, 1);
 
-            if ($order_id === $order->get_id() && $order->needs_payment()) {
-                if ('custom-proxypay' === $order->get_payment_method() ) {
-                    $note = 'Payment completed on ProxyPay';
-                    $order->add_order_note($note);
-                    $order->payment_complete();
-                }
-            }
-        }
+function proxypay_mark_payment_complete($order_id) { 
+    
+    $order = wc_get_order($order_id); 
+    if ( $order->needs_payment() && 'custom-proxypay' === $order->get_payment_method() ) {
+            if( !$order->is_paid() ){
+                $note = 'Payment completed on ProxyPay';
+                $order->add_order_note($note);
+                $order->payment_complete();
+            }    
     }
+}
